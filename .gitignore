@@ -4,7 +4,7 @@ node_modules
 data
 botData
 .env
-build
+dist
 .husky
 rec.md
 lib/**/*.d.ts

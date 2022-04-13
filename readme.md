@@ -7,8 +7,8 @@
 
 - 成员排列
 ```javascript
-const {multiMunres} = require('multi-munkres')
-multiMunres([1, 1, 2, 1, 1],//每个空槽的人数
+const {multiMunkres} = require('multi-munkres')
+multiMunkres([1, 1, 2, 1, 1],//每个空槽的人数
     [
         [0, 1, 0, 2, 3],//每个人对每个空槽的cost
         [0, 1, 2, 0, 3],

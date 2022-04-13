@@ -35,12 +35,20 @@ function reduction(array: any[], indexes: number[]) {
     return array.map((v, i) => array[indexes.indexOf(i)])
 }
 
+/**
+ *
+ * @param perSlot 每个空槽需要的人数
+ * @param eachPerson 每个人对应每个空槽的cost
+ * @param personMax 每人能接受的最大空槽
+ * @param max 最大不予安排的cost值
+ */
 export function multiMunkres(perSlot = [1, 1, 2, 1, 1],
                              eachPerson = [
                                  [0, 1, 0, 2, 3],
                                  [0, 1, 2, 0, 2],
                                  [2, 1, 0, 1, 3]],
-                             personMax = [2, 2, 3], max = 3) {
+                             personMax = [2, 2, 3],
+                             max = 3) {
     const restSlot = [...perSlot]
     const each = [...eachPerson.map(v => v.map(v1 => v1))]
 
@@ -87,76 +95,3 @@ export function multiMunkres(perSlot = [1, 1, 2, 1, 1],
 
     return totalSlot
 }
-
-export function multiMunkres1(perSlot = [1, 1, 2, 1, 1],
-                              eachPerson = [
-                                  [0, 1, 0, 2, 3],
-                                  [0, 1, 2, 0, 3],
-                                  [2, 1, 0, 1, 3]],
-                              personMax = [2, 2, 3], max = 2) {
-
-    let restSlot = [].concat(perSlot)
-    let totalSlot = new Array(perSlot.length).fill("").map(v => [])
-
-    const totalP = new Array(eachPerson.length).fill("").map(v => [])
-
-    let [eachPerson1, pIndexes] = shuffle(eachPerson)
-    let personMax1 = shuffleUseIndexes(personMax, pIndexes)
-
-    while (restSlot.find(v => v > 0)) {
-        // const slotIndexes = new Array(perSlot.length).fill("").map((v, i) => i)
-        // shuffle(slotIndexes)
-        // restSlot = slotIndexes.map(v => restSlot[v])
-        const before = restSlot.map(v => v)
-        const [restSlotT, slotIndexes] = shuffle(restSlot)
-        eachPerson1.forEach((v, i) => {
-            eachPerson1[i] = shuffleUseIndexes(v, slotIndexes)
-        })
-
-        const indexes = filterIndex(restSlotT, (v) => v > 0)
-        const currentPIndex = filterIndex(eachPerson1, (v, i) => !totalP[i] || totalP[i].length < personMax1[i])
-        if (currentPIndex.length) {
-            let currentP = currentPIndex
-                .map(v => eachPerson1[v])//抽出剩余person
-                .map(v => indexes.map(v1 => v[v1]))//抽出对应班次
-            const res: number[][] = munkres(currentP)//optimizeRes(,perSlot.length)
-
-            indexes.forEach((v, i) => {
-                v = slotIndexes[v]
-                const slot = res.find(v1 => v1[1] === i)
-                if (slot) {
-                    const [p, s] = slot
-                    const pi = currentPIndex[p]
-                    if (totalSlot[v].indexOf(pi) === -1 && totalP[pi].length < max) {
-                        totalSlot[v].push(pi)
-                        totalP[pi].push(v)
-                        restSlotT[v] -= 1
-                    }
-                }
-            })
-
-            restSlot = reduction(restSlotT, slotIndexes)
-            eachPerson1.forEach((v, i) => {
-                eachPerson1[i] = reduction(v, slotIndexes)
-            })
-            if (restSlot.every((v, i) => v === before[i])) {
-                break;
-            }
-        } else {
-            break;
-        }
-        const ret = new Array(totalSlot.length)
-        totalSlot.forEach((v, i) => {
-            ret[i] = totalSlot[slotIndexes[i]]
-        })
-        totalSlot = ret
-    }
-    return totalSlot.map(v => v.map(v1 => pIndexes[v1]))
-}
-
-
-const a = multiMunkres()
-console.log(a, calCost(a, [
-    [0, 1, 0, 2, 3],
-    [0, 1, 2, 0, 3],
-    [2, 1, 0, 1, 3]]))
