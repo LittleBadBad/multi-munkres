@@ -12,7 +12,6 @@ lib/**/*.js
 !lib/**/protobuf.min.d.ts
 !lib/**/protobuf.min.js
 ../*
-index.ts
 main.js
 lib
 es
